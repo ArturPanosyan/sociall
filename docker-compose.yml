@@ -1,3 +1,4 @@
+
 services:
 
   # ─── MySQL ───────────────────────────────────────────
@@ -11,7 +12,7 @@ services:
       MYSQL_USER: socialnet_user
       MYSQL_PASSWORD: socialnet_pass
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./backend/src/main/resources/db/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -51,6 +52,11 @@ services:
       - minio_data:/data
     networks:
       - socialnet-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
 
   # ─── Backend (Spring Boot) ────────────────────────────
   backend:
@@ -77,6 +83,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
+      minio:
+        condition: service_healthy
     networks:
       - socialnet-network
 
