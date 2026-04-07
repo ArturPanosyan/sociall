@@ -1,7 +1,7 @@
 
 services:
 
-  # ─── MySQL ───────────────────────────────────────────
+  # ── MySQL ────────────────────────────────────────────────────
   mysql:
     image: mysql:8.0
     container_name: socialnet-mysql
@@ -19,12 +19,13 @@ services:
     networks:
       - socialnet-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot1234"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 40s
 
-  # ─── Redis ───────────────────────────────────────────
+  # ── Redis ────────────────────────────────────────────────────
   redis:
     image: redis:7-alpine
     container_name: socialnet-redis
@@ -35,8 +36,13 @@ services:
       - redis_data:/data
     networks:
       - socialnet-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
-  # ─── MinIO (хранение файлов) ──────────────────────────
+  # ── MinIO ────────────────────────────────────────────────────
   minio:
     image: minio/minio:latest
     container_name: socialnet-minio
@@ -57,38 +63,49 @@ services:
       interval: 15s
       timeout: 5s
       retries: 5
+      start_period: 10s
 
-  # ─── Backend (Spring Boot) ────────────────────────────
+  # ── Backend (Spring Boot) ────────────────────────────────────
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: socialnet-backend
-    restart: always
+    restart: on-failure:3
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/socialnet?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      # Database
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/socialnet?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: socialnet_user
       SPRING_DATASOURCE_PASSWORD: socialnet_pass
+      # Redis
       SPRING_REDIS_HOST: redis
-      SPRING_REDIS_PORT: 6379
-      JWT_SECRET: your-super-secret-jwt-key-change-in-production-min-256-bits
-      JWT_EXPIRATION: 86400000
+      SPRING_REDIS_PORT: "6379"
+      # JWT
+      JWT_SECRET: socialnet-super-secret-key-256bits-please-change-in-production-2024
+      JWT_EXPIRATION: "86400000"
+      JWT_REFRESH_EXPIRATION: "604800000"
+      # MinIO
       MINIO_URL: http://minio:9000
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin123
+      # Mail (необязательно)
+      MAIL_USERNAME: noreply@socialnet.com
+      MAIL_PASSWORD: disabled
+      # JVM
+      JAVA_OPTS: "-Xmx512m -Xms256m"
     depends_on:
       mysql:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
       minio:
         condition: service_healthy
     networks:
       - socialnet-network
 
-  # ─── Frontend (Angular) ───────────────────────────────
+  # ── Frontend (Angular) ───────────────────────────────────────
   frontend:
     build:
       context: ./frontend
@@ -102,16 +119,15 @@ services:
     networks:
       - socialnet-network
 
-  # ─── Nginx (reverse proxy) ────────────────────────────
+  # ── Nginx (reverse proxy) ────────────────────────────────────
   nginx:
     image: nginx:alpine
     container_name: socialnet-nginx
     restart: always
     ports:
       - "80:80"
-      - "443:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - backend
       - frontend

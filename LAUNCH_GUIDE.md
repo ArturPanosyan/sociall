@@ -29,13 +29,13 @@ docker compose logs -f frontend
 ```
 
 ### Доступные адреса:
-| Сервис         | URL                            |
-|----------------|-------------------------------|
-| 🌐 Приложение  | http://localhost               |
-| 🔧 Backend API | http://localhost:8080/api      |
-| 📦 MinIO UI    | http://localhost:9001          |
-| 🗄️ MySQL       | localhost:3306                 |
-| 📮 Redis       | localhost:6379                 |
+| Сервис         | URL                       |
+|----------------|---------------------------|
+| 🌐 Приложение  | http://localhost          |
+| 🔧 Backend API | http://localhost:8080/api |
+| 📦 MinIO UI    | http://localhost:9001     |
+| 🗄️ MySQL       | localhost:3307            |
+| 📮 Redis       | localhost:6379            |
 
 ---
 
