@@ -1,0 +1,49 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+  flyway:
+    enabled: false
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  mail:
+    host: localhost
+    port: 25
+
+jwt:
+  secret: test-secret-key-minimum-256-bits-for-hs256-algorithm-ok
+  expiration: 86400000
+  refresh-expiration: 604800000
+
+minio:
+  url: http://localhost:9000
+  access-key: test
+  secret-key: test123456
+  bucket:
+    avatars: test-avatars
+    posts:   test-posts
+    videos:  test-videos
+
+openai:
+  api-key: sk-test
+  model: gpt-4o-mini
+
+logging:
+  level:
+    com.socialnet: WARN
+    org.springframework: WARN

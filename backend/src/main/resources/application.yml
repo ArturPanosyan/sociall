@@ -1,0 +1,118 @@
+spring:
+  application:
+    name: socialnet-backend
+
+  # ── MySQL ────────────────────────────────────────────────────
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/socialnet?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8}
+    username: ${SPRING_DATASOURCE_USERNAME:socialnet_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:socialnet_pass}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      initialization-fail-timeout: 60000
+
+  # ── JPA ──────────────────────────────────────────────────────
+  jpa:
+    hibernate:
+      ddl-auto: update          # Hibernate сам создаёт/обновляет таблицы
+    show-sql: false
+    open-in-view: false         # Отключить предупреждение
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          batch_size: 20
+
+  # ── Flyway ОТКЛЮЧЕН (используем Hibernate ddl-auto) ──────────
+  flyway:
+    enabled: false
+
+  # ── Redis ────────────────────────────────────────────────────
+  data:
+    redis:
+      host: ${SPRING_REDIS_HOST:localhost}
+      port: ${SPRING_REDIS_PORT:6379}
+      timeout: 2000ms
+
+  # ── Файлы ────────────────────────────────────────────────────
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+  # ── Mail ─────────────────────────────────────────────────────
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:noreply@example.com}
+    password: ${MAIL_PASSWORD:password}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+  # ── OAuth2 ───────────────────────────────────────────────────
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:disabled}
+            client-secret: ${GOOGLE_CLIENT_SECRET:disabled}
+            scope: email,profile
+          github:
+            client-id: ${GITHUB_CLIENT_ID:disabled}
+            client-secret: ${GITHUB_CLIENT_SECRET:disabled}
+            scope: user:email
+  web:
+    error:
+      include-message: always
+
+# ── JWT ──────────────────────────────────────────────────────
+jwt:
+  secret: ${JWT_SECRET:socialnet-super-secret-key-at-least-256-bits-long-please-change}
+  expiration: 86400000
+  refresh-expiration: 604800000
+
+# ── MinIO ────────────────────────────────────────────────────
+minio:
+  url: ${MINIO_URL:http://localhost:9000}
+  access-key: ${MINIO_ACCESS_KEY:minioadmin}
+  secret-key: ${MINIO_SECRET_KEY:minioadmin123}
+  bucket:
+    avatars: socialnet-avatars
+    posts: socialnet-posts
+    videos: socialnet-videos
+
+# ── OpenAI ───────────────────────────────────────────────────
+openai:
+  api-key: ${OPENAI_API_KEY:disabled}
+  model: gpt-4o-mini
+
+# ── Server ───────────────────────────────────────────────────
+server:
+  port: 8080
+  compression:
+    enabled: true
+
+# ── Actuator ─────────────────────────────────────────────────
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+  health:
+    mail:
+      enabled: false
+
+# ── Logging ──────────────────────────────────────────────────
+logging:
+  level:
+    com.socialnet: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
