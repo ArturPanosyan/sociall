@@ -66,9 +66,6 @@ spring:
             client-id: ${GITHUB_CLIENT_ID:disabled}
             client-secret: ${GITHUB_CLIENT_SECRET:disabled}
             scope: user:email
-  web:
-    error:
-      include-message: always
 
 # ── JWT ──────────────────────────────────────────────────────
 jwt:
@@ -96,6 +93,8 @@ server:
   port: 8080
   compression:
     enabled: true
+  error:
+    include-message: always
 
 # ── Actuator ─────────────────────────────────────────────────
 management:
@@ -116,3 +115,17 @@ logging:
     com.socialnet: INFO
     org.springframework.security: WARN
     org.hibernate.SQL: WARN
+
+# ── SpringDoc / Swagger UI ────────────────────────────────
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+    disable-swagger-default-url: true
+  info:
+    title: SocialNet API
+    version: 1.0.0
+    description: Full REST API for SocialNet social platform

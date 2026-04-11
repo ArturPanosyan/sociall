@@ -40,7 +40,8 @@ public class SecurityConfig {
             "/api/auth/oauth2/**",
             "/swagger-ui/**",
             "/v3/api-docs/**",
-            "/actuator/health"
+            "/actuator/**", // разрешаем все actuator-эндпоинты (включая /actuator/health)
+            "/"
     };
 
     @Bean
@@ -79,8 +80,9 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder());
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);   // ✅ правильно
+        provider.setPasswordEncoder(passwordEncoder());       // ✅ правильно
         return provider;
     }
 

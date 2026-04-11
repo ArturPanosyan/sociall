@@ -105,4 +105,9 @@ public class AiService {
         }
         return null;
     }
+
+    public String generateText(String prompt) {
+        return callOpenAI(prompt);
+    }
+
 }

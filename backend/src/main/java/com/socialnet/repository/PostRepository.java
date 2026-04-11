@@ -70,6 +70,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     long countByIsDeletedTrue();
 
+    long countByUserAndIsDeletedFalse(User user);
+
+
     @Query("""
         SELECT p FROM Post p
         WHERE LOWER(p.content) LIKE LOWER(CONCAT('%', :query, '%'))
