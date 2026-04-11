@@ -36,12 +36,11 @@ public class SecurityConfig {
 
     // ─── Публичные эндпоинты (без токена) ───────────────────────
     private static final String[] PUBLIC_URLS = {
-            "/api/auth/**",
+            "/", "/api/auth/**", "/actuator/**",
             "/api/auth/oauth2/**",
             "/swagger-ui/**",
             "/v3/api-docs/**",
-            "/actuator/**", // разрешаем все actuator-эндпоинты (включая /actuator/health)
-            "/"
+            "/actuator/health"
     };
 
     @Bean
@@ -81,8 +80,8 @@ public class SecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);   // ✅ правильно
-        provider.setPasswordEncoder(passwordEncoder());       // ✅ правильно
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
 
