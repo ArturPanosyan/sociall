@@ -21,4 +21,7 @@ public class UserResponse {
     private Integer followingCount;
     private Integer postsCount;
     private LocalDateTime createdAt;
+    private String website;
+    private String location;
+
 }
