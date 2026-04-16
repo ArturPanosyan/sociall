@@ -19,14 +19,14 @@ public class HomeController {
         info.put("docs",      "Use /api-test in the frontend app for API testing");
         info.put("health",    "http://localhost:8080/actuator/health");
         info.put("endpoints", Map.of(
-                "auth",          "/api/auth/**",
-                "posts",         "/api/posts/**",
-                "users",         "/api/users/**",
-                "messages",      "/api/conversations/**",
-                "notifications", "/api/notifications/**",
-                "analytics",     "/api/analytics/**",
-                "ai",            "/api/ai/**",
-                "polls",         "/api/polls/**"
+            "auth",          "/api/auth/**",
+            "posts",         "/api/posts/**",
+            "users",         "/api/users/**",
+            "messages",      "/api/conversations/**",
+            "notifications", "/api/notifications/**",
+            "analytics",     "/api/analytics/**",
+            "ai",            "/api/ai/**",
+            "polls",         "/api/polls/**"
         ));
         return info;
     }

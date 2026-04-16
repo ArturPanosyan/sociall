@@ -17,8 +17,6 @@ export const routes: Routes = [
   { path: 'register',       loadComponent: () => import('./pages/auth/register/register.component').then(m => m.RegisterComponent), canActivate: [guestGuard] },
   { path: 'forgot-password',loadComponent: () => import('./pages/auth/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent), canActivate: [guestGuard] },
   { path: 'reset-password', loadComponent: () => import('./pages/auth/reset-password/reset-password.component').then(m => m.ResetPasswordComponent), canActivate: [guestGuard] },
-  { path: 'onboarding', loadComponent: () => import('./pages/onboarding/onboarding.component').then(m => m.OnboardingComponent) },
-
   { path: '', canActivate: [authGuard], children: [
     { path: '',              redirectTo: 'feed', pathMatch: 'full' },
     { path: 'feed',          loadComponent: () => import('./pages/feed/feed.component').then(m => m.FeedComponent) },

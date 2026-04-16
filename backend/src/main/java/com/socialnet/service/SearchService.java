@@ -50,13 +50,13 @@ public class SearchService {
     }
 
     public List<Map<String, Object>> trendingHashtags() {
-        List<Object[]> rows = postRepo.findTrendingHashtags(PageRequest.of(0, 10));
+        List<Map<String, Object>> rows = postRepo.findTrendingHashtags(PageRequest.of(0, 10));
 
         return rows.stream()
                 .map(r -> {
                     Map<String, Object> m = new HashMap<>();
-                    m.put("tag", r[0]);     // хэштег
-                    m.put("count", r[1]);   // количество
+                    m.put("tag", r.get("tag"));
+                    m.put("count", r.get("count"));
                     return m;
                 })
                 .toList();
