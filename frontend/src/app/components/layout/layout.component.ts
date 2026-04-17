@@ -79,10 +79,25 @@ import { AiChatComponent } from '../ai-chat/ai-chat.component';
                         text-decoration:none;font-size:13px;color:var(--text-primary)">
                 📈 Analytics
               </a>
+              <a routerLink="/saved" (click)="dropOpen=false"
+                 style="display:flex;align-items:center;gap:8px;padding:10px 14px;
+                        text-decoration:none;font-size:13px;color:var(--text-primary)">
+                🔖 Saved
+              </a>
+              <a routerLink="/marketplace" (click)="dropOpen=false"
+                 style="display:flex;align-items:center;gap:8px;padding:10px 14px;
+                        text-decoration:none;font-size:13px;color:var(--text-primary)">
+                🛒 Marketplace
+              </a>
               <a routerLink="/settings" (click)="dropOpen=false"
                  style="display:flex;align-items:center;gap:8px;padding:10px 14px;
                         text-decoration:none;font-size:13px;color:var(--text-primary)">
                 ⚙️ Settings
+              </a>
+              <a routerLink="/api-test" (click)="dropOpen=false"
+                 style="display:flex;align-items:center;gap:8px;padding:10px 14px;
+                        text-decoration:none;font-size:13px;color:var(--text-primary)">
+                🔧 API Tester
               </a>
               <div style="height:0.5px;background:var(--border)"></div>
               <button (click)="logout()"
@@ -132,12 +147,27 @@ export class LayoutComponent {
   dropOpen = false;
 
   navLinks = [
+    { path: '/feed',        icon: '🏠', label: 'Feed' },
+    { path: '/reels',       icon: '🎬', label: 'Reels' },
+    { path: '/explore',     icon: '🔍', label: 'Explore' },
+    { path: '/communities', icon: '👥', label: 'Groups' },
+    { path: '/events',      icon: '📅', label: 'Events' },
+    { path: '/messages',    icon: '💬', label: 'Messages' },
+  ];
+  _navLinks = [
     { path: '/feed',          icon: '🏠', label: 'Feed' },
     { path: '/explore',       icon: '🔍', label: 'Explore' },
     { path: '/messages',      icon: '💬', label: 'Messages' },
   ];
 
   mobileLinks = [
+    { path: '/feed',        icon: '🏠', label: 'Feed' },
+    { path: '/reels',       icon: '🎬', label: 'Reels' },
+    { path: '/explore',     icon: '🔍', label: 'Explore' },
+    { path: '/communities', icon: '👥', label: 'Groups' },
+    { path: '/messages',    icon: '💬', label: 'Chat' },
+  ];
+  _mobileLinks = [
     { path: '/feed',          icon: '🏠', label: 'Feed' },
     { path: '/explore',       icon: '🔍', label: 'Explore' },
     { path: '/messages',      icon: '💬', label: 'Chat' },

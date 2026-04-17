@@ -34,6 +34,8 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
+  isFirstLogin(): boolean { return !localStorage.getItem('onboarded'); }
+
   // ─── Регистрация ──────────────────────────────────────────
   register(data: { username: string; email: string; password: string; fullName?: string }): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API}/auth/register`, data).pipe(

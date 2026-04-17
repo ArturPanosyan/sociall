@@ -131,7 +131,7 @@ export class RegisterComponent {
 
     this.auth.register({ fullName: fullName!, username: username!, email: email!, password: password! })
       .subscribe({
-        next:  ()  => this.router.navigate(['/feed']),
+        next:  ()  => this.router.navigate(['/onboarding']),
         error: err => {
           this.error.set(err.error?.message || 'Registration failed');
           this.loading.set(false);
