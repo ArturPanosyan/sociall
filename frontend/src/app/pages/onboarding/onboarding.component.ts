@@ -6,186 +6,177 @@ import { HttpClient }        from '@angular/common/http';
 import { AuthService }       from '../../services/auth.service';
 import { environment }       from '../../../environments/environment';
 
+interface Interest { id: string; icon: string; label: string; selected: boolean; }
+interface SuggestedUser { username: string; fullName: string; avatarUrl: string; followed: boolean; }
+
 @Component({
   selector: 'app-onboarding',
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;
-            background:linear-gradient(135deg,#ede9fe 0%,#fce7f3 50%,#e0e7ff 100%);
-            padding:20px">
-  <div style="width:100%;max-width:480px">
+<div style="min-height:100vh;background:var(--color-background-secondary);
+            display:flex;align-items:center;justify-content:center;padding:20px">
+  <div style="width:100%;max-width:560px">
 
     <!-- Progress dots -->
-    <div style="display:flex;justify-content:center;gap:8px;margin-bottom:24px">
-      @for (i of [0,1,2,3]; track i) {
+    <div style="display:flex;justify-content:center;gap:8px;margin-bottom:32px">
+      @for (i of [1,2,3]; track i) {
         <div style="height:4px;border-radius:10px;transition:all .3s"
-             [style.width]="step() === i ? '24px' : '8px'"
-             [style.background]="step() >= i ? '#6366f1' : 'rgba(99,102,241,.2)'"></div>
+             [style.width]="step() === i ? '32px' : '8px'"
+             [style.background]="step() >= i ? '#6366f1' : 'var(--color-border-tertiary)'">
+        </div>
       }
     </div>
 
-    <div style="background:#fff;border-radius:24px;padding:36px 32px;
-                box-shadow:0 8px 40px rgba(99,102,241,.12)">
+    <div style="background:var(--color-background-primary);border-radius:24px;
+                border:0.5px solid var(--color-border-tertiary);overflow:hidden">
 
-      <!-- Step 0: Welcome -->
-      @if (step() === 0) {
-        <div style="text-align:center">
-          <div style="font-size:56px;margin-bottom:16px">🌐</div>
-          <h1 style="font-size:26px;font-weight:500;color:#111;margin-bottom:10px">
-            Welcome to SocialNet!
-          </h1>
-          <p style="font-size:15px;color:#6b7280;line-height:1.6;margin-bottom:28px">
-            Let's set up your profile in just a few steps.<br>It only takes 2 minutes.
-          </p>
-          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
-            @for (f of welcomeFeatures; track f.icon) {
-              <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;
-                          background:#f9fafb;border-radius:12px">
-                <span style="font-size:20px">{{ f.icon }}</span>
-                <div style="text-align:left">
-                  <div style="font-size:13px;font-weight:500;color:#111">{{ f.title }}</div>
-                  <div style="font-size:12px;color:#6b7280">{{ f.desc }}</div>
+      <!-- Step 1: Welcome + interests -->
+      @if (step() === 1) {
+        <div style="padding:32px">
+          <div style="text-align:center;margin-bottom:28px">
+            <div style="width:72px;height:72px;background:#6366f1;border-radius:20px;
+                        display:flex;align-items:center;justify-content:center;
+                        font-size:32px;margin:0 auto 16px">🌐</div>
+            <h1 style="font-size:24px;font-weight:500;color:var(--color-text-primary)">
+              Welcome to SocialNet!
+            </h1>
+            <p style="font-size:15px;color:var(--color-text-secondary);margin-top:6px">
+              Let's personalise your experience. Pick your interests:
+            </p>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px">
+            @for (int of interests; track int.id) {
+              <button (click)="int.selected = !int.selected"
+                      style="padding:14px 10px;border-radius:14px;border:2px solid;
+                             cursor:pointer;transition:all .15s;text-align:center"
+                      [style.border-color]="int.selected ? '#6366f1' : 'var(--color-border-tertiary)'"
+                      [style.background]="int.selected ? '#e0e7ff' : 'var(--color-background-primary)'">
+                <div style="font-size:26px;margin-bottom:6px">{{ int.icon }}</div>
+                <div style="font-size:12px;font-weight:500"
+                     [style.color]="int.selected ? '#4338ca' : 'var(--color-text-primary)'">
+                  {{ int.label }}
                 </div>
-              </div>
+              </button>
             }
           </div>
-          <button (click)="next()" style="width:100%;padding:14px;background:#6366f1;
-                  color:#fff;border:none;border-radius:12px;font-size:15px;
-                  font-weight:500;cursor:pointer">
-            Get started →
+
+          <button (click)="step.set(2)"
+                  style="width:100%;padding:14px;background:#6366f1;color:#fff;
+                         border:none;border-radius:12px;font-size:15px;font-weight:500;cursor:pointer">
+            Continue →
+          </button>
+          <button (click)="skip()"
+                  style="width:100%;padding:10px;background:none;border:none;
+                         color:var(--color-text-secondary);font-size:13px;cursor:pointer;margin-top:8px">
+            Skip for now
           </button>
         </div>
       }
 
-      <!-- Step 1: Profile info -->
-      @if (step() === 1) {
-        <div>
-          <h2 style="font-size:20px;font-weight:500;color:#111;margin-bottom:6px">Your profile</h2>
-          <p style="font-size:14px;color:#6b7280;margin-bottom:20px">Tell people a bit about you</p>
-
-          <!-- Avatar upload -->
-          <div style="display:flex;justify-content:center;margin-bottom:20px">
-            <div style="position:relative;cursor:pointer" (click)="avatarInput.click()">
-              <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);
-                          display:flex;align-items:center;justify-content:center;
-                          color:#fff;font-size:28px;font-weight:500;overflow:hidden">
-                @if (avatarPreview()) {
-                  <img [src]="avatarPreview()" style="width:100%;height:100%;object-fit:cover">
-                } @else {
-                  {{ fullName.charAt(0).toUpperCase() || '?' }}
-                }
-              </div>
-              <div style="position:absolute;bottom:0;right:0;width:26px;height:26px;
-                          background:#6366f1;border-radius:50%;border:2px solid #fff;
-                          display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff">
-                +
-              </div>
-            </div>
-            <input #avatarInput type="file" accept="image/*" style="display:none"
-                   (change)="previewAvatar(avatarInput.files)">
-          </div>
-
-          <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px">
-            <div>
-              <label style="font-size:12px;font-weight:500;color:#6b7280;display:block;margin-bottom:5px">Full Name</label>
-              <input [(ngModel)]="fullName" placeholder="Your full name"
-                     style="width:100%;padding:10px 14px;border:0.5px solid #e5e7eb;
-                            border-radius:10px;font-size:14px;outline:none;background:#f9fafb">
-            </div>
-            <div>
-              <label style="font-size:12px;font-weight:500;color:#6b7280;display:block;margin-bottom:5px">Bio</label>
-              <textarea [(ngModel)]="bio" placeholder="Tell something about yourself..."
-                        rows="3"
-                        style="width:100%;padding:10px 14px;border:0.5px solid #e5e7eb;
-                               border-radius:10px;font-size:14px;outline:none;resize:none;background:#f9fafb">
-              </textarea>
-            </div>
-            <div>
-              <label style="font-size:12px;font-weight:500;color:#6b7280;display:block;margin-bottom:5px">Location</label>
-              <input [(ngModel)]="location" placeholder="City, Country"
-                     style="width:100%;padding:10px 14px;border:0.5px solid #e5e7eb;
-                            border-radius:10px;font-size:14px;outline:none;background:#f9fafb">
-            </div>
-          </div>
-          <div style="display:flex;gap:10px">
-            <button (click)="skip()" style="flex:1;padding:12px;border:0.5px solid #e5e7eb;
-                    background:#fff;border-radius:12px;font-size:14px;cursor:pointer;color:#6b7280">
-              Skip
-            </button>
-            <button (click)="saveProfile()" style="flex:2;padding:12px;background:#6366f1;
-                    color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:500;cursor:pointer">
-              Continue →
-            </button>
-          </div>
-        </div>
-      }
-
-      <!-- Step 2: Interests -->
+      <!-- Step 2: Follow suggested users -->
       @if (step() === 2) {
-        <div>
-          <h2 style="font-size:20px;font-weight:500;color:#111;margin-bottom:6px">Pick your interests</h2>
-          <p style="font-size:14px;color:#6b7280;margin-bottom:20px">
-            We'll personalise your feed based on what you love
-          </p>
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px">
-            @for (interest of interests; track interest.tag) {
-              <button (click)="toggleInterest(interest)"
-                      style="padding:8px 16px;border-radius:20px;font-size:13px;
-                             cursor:pointer;transition:all .15s;font-weight:500"
-                      [style.background]="interest.selected ? '#6366f1' : '#f3f4f6'"
-                      [style.color]="interest.selected ? '#fff' : '#374151'"
-                      [style.border]="interest.selected ? 'none' : '0.5px solid #e5e7eb'">
-                {{ interest.icon }} {{ interest.tag }}
-              </button>
+        <div style="padding:32px">
+          <div style="text-align:center;margin-bottom:24px">
+            <div style="font-size:40px;margin-bottom:12px">👥</div>
+            <h2 style="font-size:22px;font-weight:500;color:var(--color-text-primary)">
+              Follow some people
+            </h2>
+            <p style="font-size:14px;color:var(--color-text-secondary);margin-top:6px">
+              See their posts in your feed
+            </p>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px">
+            @for (u of suggestedUsers; track u.username) {
+              <div style="display:flex;align-items:center;gap:12px;padding:12px;
+                          background:var(--color-background-secondary);border-radius:12px">
+                <div style="width:44px;height:44px;border-radius:50%;background:#6366f1;
+                             display:flex;align-items:center;justify-content:center;
+                             color:#fff;font-weight:500;font-size:16px;flex-shrink:0">
+                  {{ u.username.charAt(0).toUpperCase() }}
+                </div>
+                <div style="flex:1">
+                  <div style="font-size:14px;font-weight:500;color:var(--color-text-primary)">
+                    {{ u.fullName || u.username }}
+                  </div>
+                  <div style="font-size:12px;color:var(--color-text-secondary)">&#64;{{ u.username }}</div>
+                </div>
+                <button (click)="toggleSuggestedFollow(u)"
+                        style="padding:6px 16px;border-radius:8px;font-size:13px;
+                               font-weight:500;cursor:pointer;transition:all .15s;border:1.5px solid"
+                        [style.background]="u.followed ? 'var(--color-background-primary)' : '#6366f1'"
+                        [style.color]="u.followed ? 'var(--color-text-primary)' : '#fff'"
+                        [style.border-color]="u.followed ? 'var(--color-border-secondary)' : '#6366f1'">
+                  {{ u.followed ? 'Following ✓' : 'Follow' }}
+                </button>
+              </div>
             }
           </div>
-          <div style="display:flex;gap:10px">
-            <button (click)="prev()" style="flex:1;padding:12px;border:0.5px solid #e5e7eb;
-                    background:#fff;border-radius:12px;font-size:14px;cursor:pointer;color:#6b7280">
-              Back
-            </button>
-            <button (click)="next()" style="flex:2;padding:12px;background:#6366f1;
-                    color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:500;cursor:pointer">
-              Continue →
-            </button>
-          </div>
+
+          <button (click)="step.set(3)"
+                  style="width:100%;padding:14px;background:#6366f1;color:#fff;
+                         border:none;border-radius:12px;font-size:15px;font-weight:500;cursor:pointer">
+            Continue →
+          </button>
+          <button (click)="step.set(3)"
+                  style="width:100%;padding:10px;background:none;border:none;
+                         color:var(--color-text-secondary);font-size:13px;cursor:pointer;margin-top:8px">
+            Skip
+          </button>
         </div>
       }
 
-      <!-- Step 3: Done -->
+      <!-- Step 3: Upload avatar + bio -->
       @if (step() === 3) {
-        <div style="text-align:center">
-          <div style="font-size:64px;margin-bottom:16px">🎉</div>
-          <h2 style="font-size:22px;font-weight:500;color:#111;margin-bottom:10px">You're all set!</h2>
-          <p style="font-size:14px;color:#6b7280;line-height:1.6;margin-bottom:24px">
-            Your profile is ready. Start exploring and connecting with people.
+        <div style="padding:32px;text-align:center">
+          <div style="font-size:40px;margin-bottom:12px">🎉</div>
+          <h2 style="font-size:22px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px">
+            You're all set!
+          </h2>
+          <p style="font-size:14px;color:var(--color-text-secondary);margin-bottom:24px">
+            Complete your profile to get more followers
           </p>
-          @if (selectedInterests().length) {
-            <div style="background:#e0e7ff;border-radius:12px;padding:14px;margin-bottom:20px;text-align:left">
-              <div style="font-size:12px;font-weight:500;color:#4338ca;margin-bottom:8px">
-                Your interests
-              </div>
-              <div style="display:flex;flex-wrap:wrap;gap:6px">
-                @for (i of selectedInterests(); track i.tag) {
-                  <span style="font-size:12px;background:#fff;color:#4338ca;
-                               padding:3px 10px;border-radius:10px">{{ i.icon }} {{ i.tag }}</span>
-                }
-              </div>
-            </div>
-          }
-          <div style="display:flex;flex-direction:column;gap:10px">
-            <button (click)="goToFeed()"
-                    style="width:100%;padding:14px;background:#6366f1;color:#fff;
-                           border:none;border-radius:12px;font-size:15px;font-weight:500;cursor:pointer">
-              🏠 Go to Feed
-            </button>
-            <button (click)="goToExplore()"
-                    style="width:100%;padding:12px;border:0.5px solid #e5e7eb;background:#fff;
-                           border-radius:12px;font-size:14px;cursor:pointer;color:#374151">
-              🔍 Explore people first
-            </button>
+
+          <!-- Avatar upload -->
+          <div style="width:90px;height:90px;border-radius:50%;background:#e0e7ff;
+                      margin:0 auto 8px;display:flex;align-items:center;justify-content:center;
+                      cursor:pointer;border:2px dashed #6366f1"
+               (click)="avatarInput.click()">
+            <span style="font-size:28px">📷</span>
           </div>
+          <input #avatarInput type="file" accept="image/*" style="display:none"
+                 (change)="onAvatarChange($event)">
+          <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:20px">
+            Click to upload photo
+          </p>
+
+          <!-- Bio -->
+          <textarea [(ngModel)]="bio" placeholder="Write a short bio about yourself..."
+                    rows="3"
+                    style="width:100%;padding:12px;border:0.5px solid var(--color-border-tertiary);
+                           border-radius:12px;background:var(--color-background-secondary);
+                           color:var(--color-text-primary);font-size:14px;
+                           outline:none;resize:none;margin-bottom:20px;text-align:left">
+          </textarea>
+
+          <!-- Checkboxes summary -->
+          <div style="background:var(--color-background-secondary);border-radius:12px;
+                      padding:14px;margin-bottom:24px;text-align:left">
+            <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:8px">Your setup:</div>
+            <div style="font-size:13px;color:var(--color-text-primary);display:flex;flex-direction:column;gap:4px">
+              <span>✅ {{ selectedInterests().length }} interests selected</span>
+              <span>✅ {{ followedCount() }} people followed</span>
+              <span>{{ bio ? '✅' : '⬜' }} Bio {{ bio ? 'added' : 'not added yet' }}</span>
+            </div>
+          </div>
+
+          <button (click)="finish()"
+                  style="width:100%;padding:14px;background:#6366f1;color:#fff;
+                         border:none;border-radius:12px;font-size:15px;font-weight:500;cursor:pointer">
+            🚀 Go to my feed
+          </button>
         </div>
       }
     </div>
@@ -194,71 +185,56 @@ import { environment }       from '../../../environments/environment';
   `
 })
 export class OnboardingComponent {
-  step         = signal(0);
-  avatarPreview = signal<string | null>(null);
-  fullName     = '';
-  bio          = '';
-  location     = '';
-  avatarFile:  File | null = null;
+  step = signal(1);
+  bio  = '';
 
-  welcomeFeatures = [
-    { icon: '💬', title: 'Chat in real-time',    desc: 'Message anyone instantly' },
-    { icon: '📸', title: 'Share your moments',   desc: 'Photos, videos and stories' },
-    { icon: '🔍', title: 'Discover people',       desc: 'Find interesting accounts' },
-    { icon: '🤖', title: 'AI assistant',          desc: 'Get help anytime' },
+  interests: Interest[] = [
+    { id:'tech',     icon:'💻', label:'Technology',  selected:false },
+    { id:'design',   icon:'🎨', label:'Design',       selected:false },
+    { id:'science',  icon:'🔬', label:'Science',      selected:false },
+    { id:'travel',   icon:'✈️',  label:'Travel',       selected:false },
+    { id:'food',     icon:'🍕', label:'Food',         selected:false },
+    { id:'fitness',  icon:'💪', label:'Fitness',      selected:false },
+    { id:'music',    icon:'🎵', label:'Music',        selected:false },
+    { id:'gaming',   icon:'🎮', label:'Gaming',       selected:false },
+    { id:'art',      icon:'🖼️', label:'Art',          selected:false },
+    { id:'business', icon:'💼', label:'Business',     selected:false },
+    { id:'movies',   icon:'🎬', label:'Movies',       selected:false },
+    { id:'sports',   icon:'⚽', label:'Sports',       selected:false },
   ];
 
-  interests = [
-    { icon: '💻', tag: 'Technology', selected: false },
-    { icon: '🎨', tag: 'Design',     selected: false },
-    { icon: '📸', tag: 'Photography',selected: false },
-    { icon: '🎵', tag: 'Music',      selected: false },
-    { icon: '✈️', tag: 'Travel',     selected: false },
-    { icon: '🍕', tag: 'Food',       selected: false },
-    { icon: '🏋️', tag: 'Fitness',   selected: false },
-    { icon: '📚', tag: 'Books',      selected: false },
-    { icon: '🎮', tag: 'Gaming',     selected: false },
-    { icon: '🌿', tag: 'Nature',     selected: false },
-    { icon: '🎬', tag: 'Movies',     selected: false },
-    { icon: '💰', tag: 'Finance',    selected: false },
+  suggestedUsers: SuggestedUser[] = [
+    { username:'alice',  fullName:'Alice Johnson',  avatarUrl:'', followed:false },
+    { username:'bob',    fullName:'Bob Smith',      avatarUrl:'', followed:false },
+    { username:'admin',  fullName:'SocialNet Team', avatarUrl:'', followed:false },
   ];
 
-  selectedInterests() { return this.interests.filter(i => i.selected); }
+  selectedInterests = () => this.interests.filter(i => i.selected);
+  followedCount     = () => this.suggestedUsers.filter(u => u.followed).length;
 
-  constructor(
-    private router: Router,
-    private http:   HttpClient,
-    public  auth:   AuthService
-  ) {
-    const u = auth.currentUser();
-    if (u) { this.fullName = u.fullName || ''; }
-  }
+  constructor(private router: Router, private http: HttpClient, public auth: AuthService) {}
 
-  next()  { this.step.update(s => Math.min(s + 1, 3)); }
-  prev()  { this.step.update(s => Math.max(s - 1, 0)); }
-  skip()  { this.next(); }
-
-  toggleInterest(i: any) { i.selected = !i.selected; }
-
-  previewAvatar(files: FileList | null) {
-    if (!files?.length) return;
-    this.avatarFile = files[0];
-    const reader = new FileReader();
-    reader.onload = e => this.avatarPreview.set(e.target?.result as string);
-    reader.readAsDataURL(files[0]);
-  }
-
-  saveProfile() {
-    const data = { fullName: this.fullName, bio: this.bio, location: this.location };
-    this.http.patch(`${environment.apiUrl}/users/me`, data).subscribe();
-    if (this.avatarFile) {
-      const fd = new FormData();
-      fd.append('file', this.avatarFile);
-      this.http.post(`${environment.apiUrl}/users/me/avatar`, fd).subscribe();
+  toggleSuggestedFollow(u: SuggestedUser) {
+    u.followed = !u.followed;
+    if (u.followed) {
+      this.http.post(`${environment.apiUrl}/users/${u.username}/follow`, {}).subscribe();
     }
-    this.next();
   }
 
-  goToFeed()    { localStorage.setItem('onboarded', '1'); this.router.navigate(['/feed']); }
-  goToExplore() { localStorage.setItem('onboarded', '1'); this.router.navigate(['/explore']); }
+  onAvatarChange(e: Event) {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    const form = new FormData();
+    form.append('file', file);
+    this.http.post(`${environment.apiUrl}/users/me/avatar`, form).subscribe();
+  }
+
+  saveBio() {
+    if (this.bio) {
+      this.http.put(`${environment.apiUrl}/users/me`, { bio: this.bio }).subscribe();
+    }
+  }
+
+  skip()   { this.router.navigate(['/feed']); }
+  finish() { this.saveBio(); localStorage.setItem('onboarded','1'); this.router.navigate(['/feed']); }
 }

@@ -10,9 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Map;
-
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
@@ -62,7 +59,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         WHERE p.is_deleted = 0 AND p.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
         GROUP BY h.id, h.name ORDER BY postsCount DESC
         """, nativeQuery = true)
-    List<Map<String, Object>> findTrendingHashtags(Pageable pageable);
+    java.util.List<java.util.Map<String, Object>> findTrendingHashtags(Pageable pageable);
 
     long countByIsDeletedTrue();
     long countByUserAndIsDeletedFalse(com.socialnet.entity.User user);
@@ -84,4 +81,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     void incrementViews(@Param("id") Long id);
 
     Page<Post> findByTypeAndIsDeletedFalseOrderByCreatedAtDesc(Post.PostType type, Pageable p);
+
+    Page<Post> findByIsDeletedFalseOrderByLikesCountDesc(Pageable p);
 }

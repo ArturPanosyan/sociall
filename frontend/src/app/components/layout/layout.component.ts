@@ -79,6 +79,16 @@ import { AiChatComponent } from '../ai-chat/ai-chat.component';
                         text-decoration:none;font-size:13px;color:var(--text-primary)">
                 📈 Analytics
               </a>
+              <a routerLink="/friends" (click)="dropOpen=false"
+                 style="display:flex;align-items:center;gap:8px;padding:10px 14px;
+                        text-decoration:none;font-size:13px;color:var(--text-primary)">
+                👥 Friends
+              </a>
+              <a routerLink="/discover" (click)="dropOpen=false"
+                 style="display:flex;align-items:center;gap:8px;padding:10px 14px;
+                        text-decoration:none;font-size:13px;color:var(--text-primary)">
+                ✨ Discover
+              </a>
               <a routerLink="/saved" (click)="dropOpen=false"
                  style="display:flex;align-items:center;gap:8px;padding:10px 14px;
                         text-decoration:none;font-size:13px;color:var(--text-primary)">
@@ -88,6 +98,31 @@ import { AiChatComponent } from '../ai-chat/ai-chat.component';
                  style="display:flex;align-items:center;gap:8px;padding:10px 14px;
                         text-decoration:none;font-size:13px;color:var(--text-primary)">
                 🛒 Marketplace
+              </a>
+              <a routerLink="/rooms" (click)="dropOpen=false"
+                 style="display:flex;align-items:center;gap:8px;padding:10px 14px;
+                        text-decoration:none;font-size:13px;color:var(--text-primary)">
+                🎙️ Live Rooms
+              </a>
+              <a routerLink="/jobs" (click)="dropOpen=false"
+                 style="display:flex;align-items:center;gap:8px;padding:10px 14px;
+                        text-decoration:none;font-size:13px;color:var(--text-primary)">
+                💼 Jobs
+              </a>
+              <a routerLink="/achievements" (click)="dropOpen=false"
+                 style="display:flex;align-items:center;gap:8px;padding:10px 14px;
+                        text-decoration:none;font-size:13px;color:var(--text-primary)">
+                🏅 Achievements
+              </a>
+              <a routerLink="/leaderboard" (click)="dropOpen=false"
+                 style="display:flex;align-items:center;gap:8px;padding:10px 14px;
+                        text-decoration:none;font-size:13px;color:var(--text-primary)">
+                🏆 Leaderboard
+              </a>
+              <a routerLink="/watch" (click)="dropOpen=false"
+                 style="display:flex;align-items:center;gap:8px;padding:10px 14px;
+                        text-decoration:none;font-size:13px;color:var(--text-primary)">
+                🎬 Watch Together
               </a>
               <a routerLink="/settings" (click)="dropOpen=false"
                  style="display:flex;align-items:center;gap:8px;padding:10px 14px;
@@ -148,6 +183,7 @@ export class LayoutComponent {
 
   navLinks = [
     { path: '/feed',        icon: '🏠', label: 'Feed' },
+    { path: '/discover',    icon: '✨', label: 'Discover' },
     { path: '/reels',       icon: '🎬', label: 'Reels' },
     { path: '/explore',     icon: '🔍', label: 'Explore' },
     { path: '/communities', icon: '👥', label: 'Groups' },
